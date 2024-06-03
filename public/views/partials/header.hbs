@@ -1,0 +1,85 @@
+<script src="/js/scripts.js"></script>
+<a href="/">
+    <img src="https://www.pngplay.com/wp-content/uploads/1/Cart-PNG-Stock-Images.png" alt="img" />
+</a>
+<nav>
+    <form action="/search" method="get">
+        <input type="search" name="s" placeholder="Поиск" />
+        <button class="searchbutton" type="submit">Поиск</button>
+    </form>
+    <ul>
+        <li><a href="/">Главная</a></li>
+        <li><a href="/cart">Корзина</a></li>
+        {{#if user}}
+            <li><a href="/lk">Личный кабинет</a></li>
+        {{else}}
+            <li><button class="open-login-form" onclick="openLoginForm()">Войти</button></li>
+        {{/if}}
+    </ul>
+</nav>
+
+<div id="modalBackground" class="modal-background"></div>
+
+<form method="post" class="loginForm" id="loginForm">
+    <h2>Авторизация
+        <button type="button" class="close-button" id="closeButton" onclick="closeLoginForm()">×</button>
+    </h2>
+    <h3 id="falseAuth"></h3>
+    <label for="login"><b>Логин</b></label>
+    <input type="text" name="login" id="login" required>
+
+    <label for="password"><b>Пароль</b></label>
+    <input type="password" name="password" id="password" required>
+
+    <input type="submit" value="Войти">
+
+    <div class="reg">
+        <a href="/reg">Регистрация</a>
+    </div>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const loginForm = document.getElementById('loginForm');
+        const falseAuthMessage = document.getElementById('falseAuth');
+
+        loginForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(loginForm);
+            const login = formData.get('login');
+            const password = formData.get('password');
+
+            if (!login || !password) {
+                falseAuthMessage.textContent = 'Пожалуйста, заполните все поля.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        login,
+                        password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    document.cookie = `user=${result.userName};path=/`;
+                    document.cookie = `role=${result.role};path=/`;
+                    window.location.reload();
+                } else {
+                    falseAuthMessage.textContent = 'Неправильный логин или пароль';
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                falseAuthMessage.textContent = 'Произошла ошибка. Попробуйте еще раз.';
+            }
+        });
+    });
+</script>

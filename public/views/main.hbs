@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>{{title}}</title>
+</head>
+<body>
+    <header>
+        {{> header}}
+    </header>
+    <main>
+        <form name="newform" method="post">
+        </form>
+
+        <ul class="product-list">
+            {{#each products}}
+                <li key="{{this.IDТовара}}" class="product-card">
+                    <div class="img_block">
+                        <img src="../images/products_img/{{this.Код_изображения}}.jpg" alt="{{this.Название}}" />
+                    </div>
+                    <div class="product contents">
+                        <h2>{{this.Название}}</h2>
+                        <p>{{this.Описание}}</p>
+                        <p class="price">{{this.Цена}}</p>
+                        <p class = "count_t">Количество: <b>{{this.Количество}}</b></p>
+                    </div>
+
+                    
+                    
+                </li>
+            {{/each}}
+        </ul>
+
+    
+
+    </main>
+    <footer>
+        {{> footer}}
+    </footer>
+</body>
+

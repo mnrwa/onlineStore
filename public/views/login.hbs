@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Авторизация</title>
+</head>
+<body>
+    <div class="login">
+        <img src="https://www.pngplay.com/wp-content/uploads/1/Cart-PNG-Stock-Images.png" alt="img"/>
+
+        <h2>Авторизация</h2>
+        <form action="/auth" method="post" id="login">
+            <input type="text" name= "username" placeholder="Логин" name = "username" >
+            <input type="password" name="password" placeholder="Пароль" name="password" >
+            <p>
+			<input type="submit" value="Войти">
+            <a href="/reg">Регистрация</a>
+            </p>
+        </form>
+    </div>
+
+    <footer>
+        {{>footer}}
+    </footer>
+</body>
+</html>
