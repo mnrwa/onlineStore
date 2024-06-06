@@ -1,0 +1,40 @@
+<script src="/js/scripts.js"></script>
+<a href="/">
+    <img src="https://www.pngplay.com/wp-content/uploads/1/Cart-PNG-Stock-Images.png" alt="img" />
+</a>
+<nav>
+    <form action="/search" method="get">
+        <input type="search" name="s" placeholder="Поиск" />
+        <button class="searchbutton" type="submit">Поиск</button>
+    </form>
+    <ul>
+        <li><a href="/">Главная</a></li>
+        <li><a href="/cart">Корзина<div id="counter-value">0</div></a></li>
+        {{#if user}}
+        <li><a href="/lk">{{user.userName}}</a></li>
+        {{else}}
+        <li><button class="open-login-form" onclick="openLoginForm()">Войти</button></li>
+        {{/if}}
+    </ul>
+</nav>
+
+<div id="modalBackground" class="modal-background"></div>
+
+<form method="post" class="loginForm" id="loginForm">
+    <h2>Авторизация
+        <button type="button" class="close-button" id="closeButton" onclick="closeLoginForm()">×</button>
+    </h2>
+    <h3 id="falseAuth"></h3>
+    <label for="login"><b>Логин</b></label>
+    <input type="text" name="login" id="login" required>
+
+    <label for="password"><b>Пароль</b></label>
+    <input type="password" name="password" id="password" required>
+
+    <input type="submit" value="Войти">
+
+    <div class="reg">
+        <a href="/reg">Регистрация</a>
+    </div>
+</form>
+

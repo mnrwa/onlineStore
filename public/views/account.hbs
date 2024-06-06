@@ -1,0 +1,44 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="/js/scripts.js"></script>
+    <title>Личный кабинет</title>
+</head>
+
+<header>
+    {{>header}}
+</header>
+
+<div class="account">
+    <div class="loginuser">
+        <h2>{{user.userName}}</h2>
+    </div>
+    
+    {{#each datauser}}
+    <form class="change-acc" method="post">
+        <label>Имя</label>
+        <input type="text" name="name" id="name" value="{{this.Имя}}" required>
+
+        <label>Фамилия</label>
+        <input type="text" name="lastname" id="lastname" value="{{this.Фамилия}}" required>
+
+        <label>Электронная почта</label>
+        <input type="text" name="email" id="email" value="{{this.ЭлектроннаяПочта}}" required>
+
+        <label>Адрес</label>
+        <input type="text" name="address" id="address" value="{{this.Адрес}}" required>
+
+        <label>Пароль</label>
+        <input type="password" name="password" id="password" placeholder="Пароль" required>
+    </form>
+    {{/each}}
+</div>
+
+<button onclick="exitbtn()">Выйти</button>
+
+
+<footer>
+    {{>footer}}
+</footer>
+

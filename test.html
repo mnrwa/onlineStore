@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .account {
+            padding-left: 20px;
+            justify-content: flex-start;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .loginuser h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .account label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .account input[type="text"],
+        .account input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .account input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .account input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #e53935;
+        }
+    </style>
+</head>
+<body>
+    <div class="account">
+        <div class="loginuser">
+            <h2>Редактировать профиль</h2>
+        </div>
+        <form class="change-acc" method="post">
+            <label for="name">Имя</label>
+            <input type="text" name="name" id="name" value="name" required>
+
+            <label for="lastname">Фамилия</label>
+            <input type="text" name="lastname" id="lastname" value="lastname" required>
+
+            <label for="email">Электронная почта</label>
+            <input type="text" name="email" id="email" value="email" required>
+
+            <label for="address">Адрес</label>
+            <input type="text" name="address" id="address" value="address" required>
+
+            <label for="password">Пароль</label>
+            <input type="password" name="password" id="password" placeholder="Пароль" required>
+
+            <input type="submit" value="Сохранить">
+        </form>
+    </div>
+
+
+<style>
+.account {
+    display: block;
+    align-items: center;
+    border-radius: 10px;
+    width: 20%;
+    padding: 10px;
+    background-color: #ebebeb;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+.loginuser {
+    text-align: center;
+}
+.change-acc label{
+    margin: 5px;
+    white-space: nowrap;
+    
+}
+
+</style>
+</body>
+
+</html>
