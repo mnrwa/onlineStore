@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="/js/scripts.js"></script>
+    <title>Admin панель</title>
+</head>
+<body>
+    <header>
+        {{>header}}
+    </header>
+    <aside class="left-panel-admin">
+        <div class="tool-panel">
+            <button id="btnAddProduct">Добавить товар</button>
+            <button id="btnDeleteProduct">Удалить товар</button>
+            <button id="btnEditProduct">Редактировать товар</button>
+            <button id="btnAddAdmin">Добавить админа</button>
+            <button id="btnDeleteAdmin">Удалить админа</button>
+            <button id="btnAddCategory">Добавить категорию</button>
+            <button id="btnDltCategory">Удалить категорию</button>
+            <button id="btnExit">Выйти</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div id="content">
+            <p>Admin панель.</p>
+        </div>
+    </main>
+
+    <footer>
+        {{>footer}}
+    </footer>
+</body>
+
+</html>
+
+<script>
+    const btnAddAdmin = document.getElementById('btnAddAdmin');
+    const btnAddProduct = document.getElementById('btnAddProduct');
+    const btnDeleteProduct = document.getElementById('btnDeleteProduct');
+    const btnDeleteAdmin = document.getElementById('btnDeleteAdmin');
+    const btnEditProduct = document.getElementById('btnEditProduct');
+    const btnAddCategory = document.getElementById('btnAddCategory');
+    const btnDltCategory = document.getElementById('btnDltCategory');
+    const btnExit = document.getElementById('btnExit');
+    const content = document.getElementById('content');
+
+    btnAddAdmin.addEventListener('click', function () {
+        content.innerHTML = `
+            <form id="addAdminForm" onsubmit="return validateAddForm()">
+            <h2>Добавление админа</h2>
+            <p id="hueta1">Выберите логин пользователя или введите его id:</p>
+            <select name="addAdmin" id="selectAddAdmin" onchange="toggleInput(this, 'inputAddAdmin')">
+                <option value="">-- Выберите логин --</option>
+                {{#each dataUsers}}
+                <option value="{{id}}" data-login="{{login}}">{{login}}</option>
+                {{/each}}
+            </select>
+            <input type="number" id="inputAddAdmin" name="idUser" oninput="toggleSelect(this, 'selectAddAdmin')">
+            <input type="submit" value="Добавить">
+            </form>
+            <p id="responseMessage"></p>
+        `;
+
+        const form = document.getElementById('addAdminForm');
+        const responseMessage = document.getElementById('responseMessage');
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault(); 
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/add_admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    responseMessage.innerHTML = `<p style="color:green;">${result.message}</p>`;
+                    form.reset();
+                    
+                } else {
+                    responseMessage.innerHTML = `<p style="color:red;">${result.message}</p>`;
+                }
+            } catch (err) {
+                console.error('Ошибка:', err);
+                responseMessage.innerHTML = `<p style="color:red;">Произошла ошибка при добавлении пользователя: ${err.message}</p>`;
+            }
+        });
+    });
+
+    btnAddProduct.addEventListener('click', function () {
+            content.innerHTML = `
+                <form id="addProductForm" onsubmit="return validateAddForm()">
+                    <h2>Добавление продукта</h2>
+                    <p id="hueta1">Ввод данных:</p>
+                    <input type="text" placeholder="Название" id="name" name="name" required>
+                    <input type="text" placeholder="Описание" id="description" name="description" required>
+                    <input type="number" name="price" min="0.00" max="100000.00" step="0.01" placeholder="Цена" required>
+                    <label for="photo" class="label_for_ipnut_img">Выберите изображение</label>
+                    <input type="file" name="photo" accept="image/*" id="image_path" required>
+                    <select name="category_id" id="category_id" required>
+                        <option value="">-- Выберите категорию --</option>
+                        {{#each dataCat}}
+                            <option value="{{id}}" data-name="{{name}}">{{name}}</option>
+                        {{/each}}
+                    </select>
+                    <input type="submit" value="Добавить">
+                </form>
+                <p id="responseMessage"></p>
+            `;
+
+            const form = document.getElementById('addProductForm');
+            const responseMessage = document.getElementById('responseMessage');
+
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch('/addProductForm', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        responseMessage.innerHTML = `<span style="color:green;">${result.message}</span>`;
+                        form.reset();
+                    } else {
+                        responseMessage.innerHTML = `<span style="color:red;">${result.message}</span>`;
+                    }
+                } catch (err) {
+                    console.error('Ошибка:', err);
+                    responseMessage.innerHTML = `<span style="color:red;">Произошла ошибка при добавлении товара: ${err.message}</span>`;
+                }
+            });
+        });
+
+btnDeleteProduct.addEventListener('click', function () {
+    content.innerHTML = `
+        <form id="dltprodform" method="post">
+            <p>
+                <input type="search" name="q" placeholder="Название товара"> 
+                <input type="submit" value="Найти">
+            </p>
+            <p id="responseMessage"></p>
+            <ul class="product-list">
+                {{#each dataproducts}}
+                <li key="{{this.id}}" class="product-card">
+                    <div class="img_block">
+                        <img src="../images/products_img/{{this.image_path}}" alt="{{this.name}}" />
+                    </div>
+                    <div class="product_contents">
+                        <h2>{{this.name}}</h2>
+                        <p class="description">{{this.description}}</p>
+                        <p class="price">{{this.price}} ₽</p>
+                    </div>
+                    <button type="button" class="delete-button" data-id="{{this.id}}">Удалить</button>
+                </li>
+                {{/each}}
+            </ul>
+        </form>
+    `;
+
+    const deleteButtons = document.querySelectorAll('.delete-button');
+    const responseMessage = document.getElementById('responseMessage');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', async function () {
+            const id = this.getAttribute('data-id');
+
+            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+                try {
+                    const response = await fetch('/dltprodform', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id }),
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        responseMessage.innerHTML = `<p style="color:green;">${result.message}</p>`;
+                        this.closest('li').remove();
+                    } else {
+                        responseMessage.innerHTML = `<p style="color:red;">${result.message}</p>`;
+                    }
+                } catch (err) {
+                    console.error('Ошибка:', err);
+                    responseMessage.innerHTML = `<p style="color:red;">Произошла ошибка при удалении продукта: ${err.message}</p>`;
+                }
+            }
+        });
+    });
+});
+
+
+
+    btnDeleteAdmin.addEventListener('click', function () {
+        content.innerHTML = `
+            <form id="deleteAdminForm" onsubmit="return validateDeleteForm()">
+                <h2>Удаление админа</h2>
+                <p id="hueta1">Выберите логин пользователя или введите его id:</p>
+                <select name="deleteAdmin" id="selectDeleteAdmin" onchange="toggleInput(this, 'inputDeleteAdmin')">
+                    <option value="">-- Выберите логин --</option>
+                    {{#each dataAdmin}}
+                    <option value="{{admin_id}}">{{login}} (ID: {{admin_id}})</option>
+                    {{/each}}
+                </select>
+                <input type="number" id="inputDeleteAdmin" name="idUser"
+                    oninput="toggleSelect(this, 'selectDeleteAdmin')">
+                <input type="submit" value="Удалить">
+            </form>
+            <p id="responseMessage"></p>
+        `;
+
+        const form = document.getElementById('deleteAdminForm');
+        const responseMessage = document.getElementById('responseMessage');
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/deleteAdminForm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    responseMessage.innerHTML = `<p style="color:green;">${result.message}</p>`;
+                    form.reset();
+                } else {
+                    responseMessage.innerHTML = `<p style="color:red;">${result.message}</p>`;
+                }
+            } catch (err) {
+                console.error('Ошибка:', err);
+                responseMessage.innerHTML = `<p style="color:red;">Произошла ошибка при удалении пользователя: ${err.message}</p>`;
+            }
+        });
+    });
+
+    btnEditProduct.addEventListener('click', function () {
+    content.innerHTML = `
+        <form id="searchProductForm" method="get">
+            <p>
+                <input type="search" name="q" placeholder="Название товара"> 
+                <input type="submit" value="Найти">
+            </p>
+            <p id="responseMessage"></p>
+            <ul class="product-list">
+                {{#each dataproducts}}
+                <li key="{{this.id}}" class="product-card">
+                    <div class="img_block">
+                        <img src="../images/products_img/{{this.image_path}}" alt="{{this.name}}" />
+                    </div>
+                    <div class="product_contents">
+                        <h2>{{this.name}}</h2>
+                        <p class="description">{{this.description}}</p>
+                        <p class="price">{{this.price}} ₽</p>
+                    </div>
+                    <button type="button" class="redact-button" data-id="{{this.id}}">Редактировать</button>
+                </li>
+                {{/each}}
+            </ul>
+        </form>
+    `;
+
+    document.querySelectorAll('.redact-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            window.open(`/editproduct?id=${id}`, '_blank');
+        });
+    });
+});
+
+
+    btnExit.addEventListener('click', function () {
+        exitbtn();
+    });
+
+        function toggleInput(selectElement, inputId) {
+        const inputElement = document.getElementById(inputId);
+        console.log('toggleInput called');
+        console.log('selectElement value:', selectElement.value);
+        if (selectElement.value) {
+            inputElement.disabled = true;
+            inputElement.value = '';
+        } else {
+            inputElement.disabled = false;
+        }
+    }
+
+    btnAddCategory.addEventListener('click', function () {
+        const content = document.getElementById('content');
+        content.innerHTML = `
+            <form id="addCategoryForm">
+                <h2>Добавление категории</h2>
+                <p>Введите название новой категории:</p>
+                <input type="text" id="categoryName" name="categoryName" required>
+                <input type="submit" value="Добавить">
+            </form>
+            <p id="responseMessage"></p>
+        `;
+
+        const form = document.getElementById('addCategoryForm');
+        const responseMessage = document.getElementById('responseMessage');
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const categoryName = document.getElementById('categoryName').value;
+
+            try {
+                const response = await fetch('/add_category', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ categoryName }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    responseMessage.innerHTML = `<p style="color:green;">${result.message}</p>`;
+                    form.reset();
+                } else {
+                    responseMessage.innerHTML = `<p style="color:red;">${result.message}</p>`;
+                }
+            } catch (err) {
+                console.error('Ошибка:', err);
+                responseMessage.innerHTML = `<p style="color:red;">Произошла ошибка при добавлении категории: ${err.message}</p>`;
+            }
+        });
+    });
+btnDltCategory.addEventListener('click', function () {
+        const content = document.getElementById('content');
+        content.innerHTML = `
+            <div id="content">
+                <form id="dltCategoryForm">
+                    <h2>Удаление категории</h2>
+                    <p>Выберите категорию для удаления:</p>
+                    <select name="deleteCat" id="deleteCat">
+                        <option value="">-- Выберите категорию --</option>
+                        {{#each dataCat}}
+                        <option value="{{id}}">{{name}} (ID: {{id}})</option>
+                        {{/each}}
+                    </select>
+                    <input type="submit" value="Удалить">
+                </form>
+                <p id="responseMessage"></p>
+            </div>
+
+        `;
+
+        const form = document.getElementById('dltCategoryForm');
+        const responseMessage = document.getElementById('responseMessage');
+
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const categoryId = document.getElementById('deleteCat').value;
+
+        try {
+            const response = await fetch(`/dlt_category`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ category_id: categoryId }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                responseMessage.innerHTML = `<p style="color:green;">${result.message}</p>`;
+                form.reset();
+            } else {
+                responseMessage.innerHTML = `<p style="color:red;">${result.message}</p>`;
+            }
+        } catch (err) {
+            console.error('Ошибка:', err);
+            responseMessage.innerHTML = `<p style="color:red;">Произошла ошибка при удалении категории: ${err.message}</p>`;
+        }
+    });
+    });
+    
+
+    function toggleSelect(inputElement, selectId) {
+        const selectElement = document.getElementById(selectId);
+        console.log('toggleSelect called');
+        console.log('inputElement value:', inputElement.value);
+        if (inputElement.value) {
+            selectElement.disabled = true;
+            selectElement.value = '';
+        } else {
+            selectElement.disabled = false;
+        }
+    }
+
+    function validateAddForm() {
+        const selectElement = document.getElementById('selectAddAdmin');
+        const inputElement = document.getElementById('inputAddAdmin');
+        const errorMessage = document.getElementById('hueta1');
+
+        if (!selectElement.value && !inputElement.value) {
+            errorMessage.innerText = "Пожалуйста, выберите логин пользователя или введите его id.";
+            return false;
+        }
+        return true;
+    }
+
+    function validateDeleteForm() {
+        const selectElement = document.getElementById('selectDeleteAdmin');
+        const inputElement = document.getElementById('inputDeleteAdmin');
+        const errorMessage = document.getElementById('hueta1');
+
+        if (!selectElement.value && !inputElement.value) {
+            errorMessage.innerText = "Пожалуйста, выберите логин пользователя или введите его id.";
+            return false;
+        }
+        return true;
+    }
+
+    function validateAddForm() {
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+            const price = document.getElementById('price').value;
+            const category_id = document.getElementById('category_id').value;
+
+            if (!name || !description || !price || !category_id) {
+                alert('Пожалуйста, заполните все поля.');
+                return false;
+            }
+
+            return true;
+        }
+</script>

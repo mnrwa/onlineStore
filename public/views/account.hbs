@@ -1,44 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
-    <script src="/js/scripts.js"></script>
+    <script src="/js/scripts.js" defer></script>
     <title>Личный кабинет</title>
 </head>
+<body>
+    <header>
+        {{>header}}
+    </header>
 
-<header>
-    {{>header}}
-</header>
+    <div class="account">
+        <div class="loginuser">
+            <h2>{{user.id}}</h2>
+        </div>
+        
+        {{#each datauser}}
+        <form class="change-acc" method="post" id="changeAccForm">
+            <label for="name">Имя</label>
+            <input type="text" name="name" id="name" value="{{this.name}}" required>
 
-<div class="account">
-    <div class="loginuser">
-        <h2>{{user.userName}}</h2>
+            <label for="email">Электронная почта</label>
+            <input type="email" name="email" id="email" value="{{this.email}}" required>
+
+            <label for="address">Адрес</label>
+            <input type="text" name="address" id="address" value="{{this.address}}" required>
+
+            <label for="password">Пароль</label>
+            <input type="password" name="password_chn" id="password_chn" placeholder="Пароль" required>
+
+            <button type="submit">Сохранить изменения</button>
+        </form>
+        {{/each}}
+        <div id="res_message"></div>
     </div>
-    
-    {{#each datauser}}
-    <form class="change-acc" method="post">
-        <label>Имя</label>
-        <input type="text" name="name" id="name" value="{{this.Имя}}" required>
 
-        <label>Фамилия</label>
-        <input type="text" name="lastname" id="lastname" value="{{this.Фамилия}}" required>
+    <button class="button_ext" onclick="exitbtn()">Выйти</button>
 
-        <label>Электронная почта</label>
-        <input type="text" name="email" id="email" value="{{this.ЭлектроннаяПочта}}" required>
+    <footer>
+        {{>footer}}
+    </footer>
+</body>
 
-        <label>Адрес</label>
-        <input type="text" name="address" id="address" value="{{this.Адрес}}" required>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const changeAccForm = document.getElementById('changeAccForm');
 
-        <label>Пароль</label>
-        <input type="password" name="password" id="password" placeholder="Пароль" required>
-    </form>
-    {{/each}}
-</div>
+    changeAccForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
 
-<button onclick="exitbtn()">Выйти</button>
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const address = document.getElementById('address').value;
+        const password = document.getElementById('password_chn').value;
+        const id_user = {{user.id}};
+
+        console.log('id_user:', id_user);
+        console.log('name:', name);
+        console.log('email:', email);
+        console.log('address:', address);
+        console.log('password:', password);
+
+        try {
+            const response = await fetch('/updateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_user, name, email, address, password })
+            });
+
+            const result = await response.json();
+            const messageDiv = document.getElementById('res_message');
+
+            if (response.ok) {
+                messageDiv.textContent = result.message;
+                messageDiv.style.color = 'green';
+            } else {
+                messageDiv.textContent = result.message;
+                messageDiv.style.color = 'red';
+            }
+        } catch (error) {
+            const messageDiv = document.getElementById('res_message');
+            messageDiv.textContent = 'An error occurred while updating the user.';
+            messageDiv.style.color = 'red';
+        }
+    });
+});
 
 
-<footer>
-    {{>footer}}
-</footer>
-
+</script>
+</html>

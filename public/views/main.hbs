@@ -12,24 +12,59 @@
         {{> header}}
     </header>
     <main>
+
+        <div class="left-panel" id="leftPanel">
+            <h3>Категории</h3>
+            <div class="selectCat">
+                <label><input type="checkbox" name="category" value="Смартфоны"> Смартфоны</label>
+                <label><input type="checkbox" name="category" value="Ноутбук"> Ноутбук</label>
+                <label><input type="checkbox" name="category" value="Смарт-часы"> Смарт-часы</label>
+                <label><input type="checkbox" name="category" value="Колонка"> Колонка</label>
+                <label><input type="checkbox" name="category" value="Монитор"> Монитор</label>
+                <label><input type="checkbox" name="category" value="Переферия"> Переферия</label>
+            </div>
+            <h3>Цена</h3>
+            <div class="price-input">
+
+
+                <div class="field">
+                    <input type="number" class="input-min" min="0" max="10000" value="0">
+                    <div class="separator">-</div>
+                    <input type="number" class="input-max" min="0" max="10000" value="10000">
+                </div>
+            </div>
+            <div class="slider">
+                <div class="progress"></div>
+            </div>
+            <div class="range-input">
+                <input type="range" class="range-min" min="0" max="150000" value="0">
+                <input type="range" class="range-max" min="0" max="150000" value="150000">
+            </div>
+
+            <form action="/search" method="get">
+                <button class="cearchCat" type="submit">Применить</button>
+            </form>
+        </div>
+
+        <button id="togglePanelButton">Фильтр</button>
+
         <form name="newform" method="post">
         </form>
-
         <ul class="product-list">
             {{#each products}}
-                <li key="{{this.IDТовара}}" class="product-card">
-                    <div class="img_block">
-                        <img src="../images/products_img/{{this.Код_изображения}}.jpg" alt="{{this.Название}}" />
-                    </div>
-                    <div class="product contents">
-                        <h2>{{this.Название}}</h2>
-                        <p>{{this.Описание}}</p>
-                        <p class="price">{{this.Цена}}</p>
-                        <p class = "count_t">Количество: <b>{{this.Количество}}</b></p>
-                    </div>
+            <li key="{{this.id}}" class="product-card">
+                <div class="img_block">
+                    <img src="../images/products_img/{{this.image_path}}" alt="{{this.name}}" />
+                </div>
 
-                    <button class="addCart" onclick="addProd({{this.IDТовара}})">Добавить в корзину</button>
-                </li>
+                <div class="product_contents">
+                    <h2>{{this.name}}</h2>
+                    <p class="description">{{this.description}}</p>
+                    <!--<p class="category">{{this.category_name}}</p>-->
+                    <p class="price">{{this.price}} ₽</p>
+                </div>
+                <button class="addCart" onclick="addProd({{this.id}})">Добавить в корзину</button>
+            </li>
             {{/each}}
         </ul>
     </main>
@@ -39,7 +74,76 @@
 </body>
 
 <script>
-    window.currentUserId = "{{user.userName}}";
+    window.currentUserId = "{{user.id}}";
+    const rangeInput = document.querySelectorAll(".range-input input"),
+    priceInput = document.querySelectorAll(".price-input input"),
+    range = document.querySelector(".slider .progress");
+    let priceGap = 1000;
+
+priceInput.forEach((input) => {
+    input.addEventListener("input", (e) => {
+        let minPrice = parseInt(priceInput[0].value),
+            maxPrice = parseInt(priceInput[1].value);
+
+        if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
+            if (e.target === priceInput[0]) {
+                rangeInput[0].value = minPrice;
+                range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
+            } else {
+                rangeInput[1].value = maxPrice;
+                range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+            }
+        }
+    });
+});
+
+rangeInput.forEach((input) => {
+    input.addEventListener("input", (e) => {
+        let minVal = parseInt(rangeInput[0].value),
+            maxVal = parseInt(rangeInput[1].value);
+
+        if (maxVal - minVal < priceGap) {
+            if (e.target === rangeInput[0]) {
+                rangeInput[0].value = maxVal - priceGap;
+            } else {
+                rangeInput[1].value = minVal + priceGap;
+            }
+        } else {
+            priceInput[0].value = minVal;
+            priceInput[1].value = maxVal;
+            range.style.left = (minVal / rangeInput[0].max) * 100 + "%";
+            range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
+        }
+    });
+});
+
+const button = document.getElementById('togglePanelButton');
+const panel = document.querySelector('.left-panel');
+
+button.addEventListener('click', () => {
+    panel.classList.toggle('open');
+    toggleButtonVisibility(); 
+});
+
+document.addEventListener('click', (event) => {
+    const target = event.target;
+    const isInsidePanel = panel.contains(target);
+    const isToggleButton = target === button;
+
+    if (!isInsidePanel && !isToggleButton) {
+        panel.classList.remove('open');
+        toggleButtonVisibility(); 
+    }
+});
+
+function toggleButtonVisibility() {
+    if (panel.classList.contains('open')) {
+        button.style.display = 'none'; 
+    } else {
+        button.style.display = 'block'; 
+    }
+}
+
 
 </script>
 

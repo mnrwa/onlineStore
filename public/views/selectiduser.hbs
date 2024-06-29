@@ -1,0 +1,10 @@
+
+    <h2>Добавление админа</h2>
+    <p>Выберите логин пользователя или введите его id: 
+        <select name="addAdmin">
+            {{#each dataUsers}}
+                <option>{{name}}</option>
+            {{/each}}
+            <input type="number" id="idUser"> 
+        </select>
+    </p>

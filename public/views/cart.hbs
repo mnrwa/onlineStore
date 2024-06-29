@@ -16,11 +16,17 @@
     </header>
 
     
-    <h1>Корзина</h1>
-    <div class="my-select"></div>
-    <h2 id="myTextarea"></h2>
-    </ul>
 
+    <div class="cart-container">
+        <h1>Корзина</h1>
+        <div class="cart-items"></div>
+    </div>
+    <form action="/new-order" method="post">
+    <div class="cart-summary">
+            <p>Общая стоимость: <strong id="grand-total">0 руб.</strong></p>
+            <button class="order-button" onclick="placeOrder()">Оформить заказ</button>
+    </div>
+    </form>
 
     <footer>
         {{>footer}}
@@ -28,9 +34,8 @@
 </body>
 
 <script>
-    window.currentUserId = "{{user.userName}}";
-    displayProductCounts();
-
+    window.currentUserId = "{{user.id}}";
+   
 </script>
 
 </html>

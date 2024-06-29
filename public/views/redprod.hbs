@@ -1,0 +1,68 @@
+<head>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<header>
+    {{>header}}
+</header>
+    <div id="content_red">
+        <h1>Редактировать товар</h1>
+        <form id="editprodform">
+            <input type="hidden" name="id" id="productId" value="{{product.id}}">
+            <p>
+                <label for="productName">Название:</label>
+                <input type="text" name="name" id="productName" value="{{product.name}}" required>
+            </p>
+            <p>
+                <label for="productDescription">Описание:</label>
+                <input type="text" name="description" id="productDescription" value="{{product.description}}" required>
+            </p>
+            <p>
+                <label for="productPrice">Цена:</label>
+                <input type="number" name="price" id="productPrice" value="{{product.price}}" required>
+            </p>
+            <p>
+                <label for="photo" class="label_for_input_img">Выберите изображение</label>
+                <input type="file" name="photo" accept="image/*" id="image_path" required>
+            </p>
+            <p>
+                <label for="productCategoryId">ID категории:</label>
+                <select name="category_id" id="category_id" required>
+                    <option value="">-- Выберите категорию --</option>
+                    {{#each dataCat}}
+                        <option value="{{this.id}}" {{#if (eq this.id ../product.category_id)}}selected{{/if}}>{{this.name}}</option>
+                    {{/each}}
+                </select>
+            </p>
+            <p>
+                <input type="submit" value="Сохранить">
+            </p>
+            <p id="responseMessage"></p>
+        </form>
+    </div>
+<footer>
+    {{>footer}}
+</footer>
+
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("editprodform").addEventListener("submit", async function(event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const response = await fetch('/updateproduct', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                const responseMessage = document.getElementById("responseMessage");
+                if (result.success) {
+                    responseMessage.textContent = "Продукт успешно обновлён!";
+                    responseMessage.style.color = "green";
+                } else {
+                    responseMessage.textContent = "Ошибка при обновлении продукта: " + result.error;
+                    responseMessage.style.color = "red";
+                }
+            });
+        });
+    </script>
